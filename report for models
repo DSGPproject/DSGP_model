@@ -1,0 +1,103 @@
+MODELS WE TRIED AND SAVING ALL THE RESULTS FOR FUTURE USE
+
+The basic model - adam, accuracy , data augmentation - done
+
+
+
+
+The second model from scratch - adam , accuracy - done
+				      
+					Adam , rmsprop - done
+
+
+the mobilenet transfer learning  -  adam , accuracy  - 
+				       Adamax, accuracy 
+					Adamax , accuracy, early stopping, max pooling - 
+				       
+
+Resnet transfer learning - adam , accuracy 
+				       Adamax, accuracy 
+					Adamax , accuracy, early stopping 
+
+
+
+The model from scratch 3rd one - Adamax, accuracy 
+
+				       
+					With augmentation 
+					Without augmentation
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----------------------------------------------------------------------------------
+
+data_augmentation = tf.keras.Sequential([
+   layers.experimental.preprocessing.RandomFlip("horizontal_and_vertical"),
+   layers.experimental.preprocessing.RandomRotation(0.2),
+   layers.experimental.preprocessing.RandomZoom(0.2),
+   layers.experimental.preprocessing.RandomContrast(0.2),
+   layers.experimental.preprocessing.RandomTranslation(0.2, 0.2)
+])
+
+
+from tensorflow.keras.layers import BatchNormalization, Dropout
+from tensorflow.keras.optimizers import Adam
+input_shape = (IMAGE_SIZE, IMAGE_SIZE, CHANNELS)
+n_classes = 8
+
+# Assuming you're using TensorFlow's Rescaling layer
+resize_and_rescale = layers.Rescaling(1./255, input_shape=input_shape)
+
+model = models.Sequential([
+   resize_and_rescale,
+
+   layers.Conv2D(32, kernel_size=(3, 3), activation='relu'),
+   layers.BatchNormalization(),
+   layers.MaxPooling2D((2, 2)),
+
+   layers.Conv2D(64, kernel_size=(3, 3), activation='relu'),
+   layers.BatchNormalization(),
+   layers.MaxPooling2D((2, 2)),
+
+   layers.Conv2D(128, kernel_size=(3, 3), activation='relu'),
+   layers.BatchNormalization(),
+   layers.MaxPooling2D((2, 2)),
+
+   layers.Conv2D(256, kernel_size=(3, 3), activation='relu'),
+   layers.BatchNormalization(),
+   layers.MaxPooling2D((2, 2)),
+
+   layers.Conv2D(512, kernel_size=(3, 3), activation='relu'),
+   layers.BatchNormalization(),
+   layers.MaxPooling2D((2, 2)),
+
+   layers.Flatten(),
+
+   layers.Dense(512, activation='relu'),
+   layers.BatchNormalization(),
+   layers.Dropout(0.5),  # Adding dropout for regularization
+
+   layers.Dense(256, activation='relu'),
+   layers.BatchNormalization(),
+
+   layers.Flatten(),
+
+   layers.Dense(n_classes, activation='softmax'),
+])
+
+model.compile(optimizer=Adam(), loss='categorical_crossentropy', metrics=['accuracy'])
+
+
